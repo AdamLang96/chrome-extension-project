@@ -7,9 +7,13 @@
 chrome.runtime.onInstalled.addListener((reason) => {
        chrome.tabs.query({}, function(tabs) {
          let cachedObj = {}
+         let allIds = []
          for(let i = 0; i < tabs.length; i++) {
           cachedObj[tabs[i].title] = tabs[i].id
+          allIds.push(tabs[i].id)
          } 
+        
+
 
          let newCachedObj = {}
          const keys = Object.keys(cachedObj)
@@ -26,44 +30,51 @@ chrome.runtime.onInstalled.addListener((reason) => {
           );
 
 
-        
-          
-
           async function move(id, tabIndex) {
               await chrome.tabs.move(id, {index: tabIndex});
             }
-            
-            // for(let i = 0; i < orderedKeys.length; i++) {
-            //     move(ordered[orderedKeys[i]], i)
-            // }
-
-           
-           let i = 0;
-       (function loopIt(i) {
-        setTimeout(function(){
-         move(ordered[orderedKeys[i]], i)      
-         if(i < orderedKeys.length - 1)  loopIt(i+1)
-       }, 500);
-       })(i)
 
             async function reload(id) {
                 await chrome.tabs.reload(id);
               }
 
 
-         i = 0;                  
-
-        function myLoop() {         
-          setTimeout(function() {   
-          reload(ordered[orderedKeys[i]]);   
-          i++;                    
-          if (i < orderedKeys.length) {           
-            myLoop();             
-         }                       
-       }, 500)
+        const result = allIds.filter(x => !Object.values(ordered).includes(x))
+           
+           let i = 0;
+       (function loopIt(i) {
+        setTimeout(function(){
+           move(ordered[orderedKeys[i]], i)
+           reload(ordered[orderedKeys[i]])
+           chrome.tabs.highlight({'tabs': i}, function() {})
+           if(result[i] !== undefined) {
+            chrome.tabs.remove(result[i])           
         }
+        if(i < orderedKeys.length - 1)  loopIt(i+1)
+       }, 300);
+       })(i)
 
-      myLoop(); 
+    
+
+
+       
+       
+
+       
+
+        //     async function reload(id) {
+        //         await chrome.tabs.reload(id);
+        //       }
+
+
+        //  i = 0;                  
+
+        //  (function loopItReload(i) {
+        //     setTimeout(function(){
+        //         reload(ordered[orderedKeys[i]])      
+        //      if(i < orderedKeys.length - 1)  loopItReload(i+1)
+        //    }, 300);
+        //    })(i)
             
           
        } );

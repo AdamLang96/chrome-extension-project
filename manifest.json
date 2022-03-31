@@ -1,6 +1,6 @@
 {
-    "name": "Getting Started Example",
-    "description": "Build an Extension!",
+    "name": "ChromeTabOrganizer",
+    "description": "Sorts, Refreshes, and Deletes Duplicate Tabs!",
     "version": "1.1",
     "manifest_version": 3,
     "background": {
